@@ -103,6 +103,26 @@ export const useAuth0 = ({
         this.user = await this.auth0Client.getUser();
         this.user[googleConnections] = 0
         //Check user profile after google login ...Hit google people API here using email..and update the connections in the user above..try to route through backend to the google people api
+        // people api connections creds in googlepeople.json in this folder
+        const accessToken = await this.$auth.getTokenSilently();
+        // axios
+        // .get('https://api.coindesk.com/v1/bpi/currentprice.json')
+        // .then(response => (this.info = response))
+
+        try {
+          const { data } = await this.$axios.get("/api/external", {
+            headers: {
+              Authorization: `Bearer ${accessToken}`
+            }
+          });
+
+          this.apiMessage = data;
+          this.executed = true;
+        } catch (e) {
+          this.apiMessage = `Error: the server responded with '${e.response.status}: ${e.response.statusText}'`;
+        }
+        
+        
         console.log(this.user)
         this.loading = false;
         
